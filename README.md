@@ -225,6 +225,11 @@ Known limits:
 
 ## Development
 
+The toolchain is Node 24 (see `.nvmrc`) and TypeScript 7; there are no runtime
+dependencies. The extension itself still compiles to ES2022 against the
+`engines.vscode` floor, because that is what the extension host runs — Node 24 is
+what you build and test *with*, not what the published extension targets.
+
 ```bash
 npm install
 npm run build:page  # compile, then generate media/style-reference.html
@@ -328,8 +333,9 @@ pick a different example rather than relaxing the check.
 Small and focused beats comprehensive. Show the before and after output in the
 description — it is the fastest way for a reviewer to agree with the intent.
 The checks in [CI](.github/workflows/ci.yml) run the suite on Linux, Windows and
-macOS against Node 20 and 22, and package the extension; a green run means the
-publish path works too.
+macOS against Node 20 and 24 — the oldest extension host still in range and the
+current LTS — and package the extension; a green run means the publish path
+works too.
 
 ## License
 
