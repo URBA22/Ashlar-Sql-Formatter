@@ -1,0 +1,58 @@
+# One-off helper, run manually.
+#
+# The Marketplace publisher's "Members" search does not recognise an Entra object
+# id, a client id, or an ARM resource id. It only recognises the identity's
+# Azure DevOps *profile id*, which can only be read while authenticated AS the
+# identity — something you cannot do from a laptop for a user-assigned managed
+# identity. This workflow does it from Actions, where the federated credential
+# applies, and prints the id for you to paste into that search box.
+#
+# Run it once during setup, and again only if you replace the identity.
+
+name: Marketplace identity
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  profile-id:
+    name: print Azure DevOps profile id
+    runs-on: ubuntu-latest
+    # Must match the federated credential's subject, exactly as the release job does:
+    #   repo:<owner>/<repo>:environment:marketplace
+    environment: marketplace
+    steps:
+      - name: Sign in to Microsoft Entra ID
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Read the identity's Azure DevOps profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          # 499b84ac-1321-427f-aa17-267ca6975798 is the Azure DevOps resource id.
+          profile="$(az rest \
+            --url https://app.vssps.visualstudio.com/_apis/profile/profiles/me \
+            --resource 499b84ac-1321-427f-aa17-267ca6975798)"
+
+          id="$(echo "$profile" | python3 -c 'import json,sys; print(json.load(sys.stdin)["id"])')"
+
+          echo "Azure DevOps profile id: $id"
+          {
+            echo "## Marketplace publisher member id"
+            echo
+            echo 'Add this as a **Contributor** on the publisher at'
+            echo '<https://marketplace.visualstudio.com/manage>: open the publisher,'
+            echo 'go to **Members**, **Add**, and paste this id into the search box.'
+            echo
+            echo '```'
+            echo "$id"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

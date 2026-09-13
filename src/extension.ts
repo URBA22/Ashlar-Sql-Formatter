@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { DEFAULT_OPTIONS, detectNewline, formatSql } from './formatter';
 import type { DeepPartial, FormatOptions } from './formatter';
-import { CONFIG_SECTION, setPath, walk } from './settings';
+import { CONFIG_SECTION, EXTENSION_NAME, setPath, walk } from './settings';
 import { StyleReferencePanel } from './styleReference';
 
 const LANGUAGE_ID = 'sql';
@@ -13,7 +13,7 @@ const SELECTOR: vscode.DocumentSelector = [
 ];
 
 export function activate(context: vscode.ExtensionContext): void {
-    const output = vscode.window.createOutputChannel('SQL Formatter');
+    const output = vscode.window.createOutputChannel(EXTENSION_NAME);
     const providers = new ProviderRegistry(output);
     providers.sync();
 
@@ -170,7 +170,7 @@ function safeFormat(
         const message = error instanceof Error ? (error.stack ?? error.message) : String(error);
         output.appendLine(`Formatting ${document.uri.toString()} failed:\n${message}`);
         void vscode.window.showErrorMessage(
-            'SQL Formatter could not format this document. See the "SQL Formatter" output channel for details.',
+            `Ashlar could not format this document. See the "${EXTENSION_NAME}" output channel for details.`,
         );
         return null;
     }

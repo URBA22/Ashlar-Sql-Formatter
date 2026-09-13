@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { CONFIG_SECTION, settingPaths } from './settings';
+import { CONFIG_SECTION, EXTENSION_NAME, settingPaths } from './settings';
 
 const VIEW_TYPE = 'sqlFormatter.styleReference';
 const PAGE = ['media', 'style-reference.html'];
@@ -70,7 +70,7 @@ export class StyleReferencePanel {
 
         const panel = vscode.window.createWebviewPanel(
             VIEW_TYPE,
-            'SQL Formatter Style',
+            'Ashlar Style Reference',
             column,
             {
                 enableScripts: true,
@@ -136,8 +136,8 @@ export class StyleReferencePanel {
             const detail = error instanceof Error ? error.message : String(error);
             this.output.appendLine(`Could not write ${CONFIG_SECTION}.${path}: ${detail}`);
             void vscode.window.showErrorMessage(
-                `SQL Formatter could not save ${CONFIG_SECTION}.${path}. ` +
-                'See the SQL Formatter output channel.',
+                `Ashlar could not save ${CONFIG_SECTION}.${path}. ` +
+                `See the "${EXTENSION_NAME}" output channel.`,
             );
         } finally {
             this.writing = false;

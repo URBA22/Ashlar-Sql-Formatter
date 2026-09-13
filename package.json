@@ -3,8 +3,16 @@
   "displayName": "Ashlar - SQL Formatter (T-SQL)",
   "description": "Opinionated, dialect-aware SQL formatter with first-class T-SQL support.",
   "version": "0.1.0",
-  "publisher": "kymos",
+  "publisher": "simoneurbani",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/URBA22/Ashlar-Sql-Formatter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/URBA22/Ashlar-Sql-Formatter/issues"
+  },
+  "homepage": "https://github.com/URBA22/Ashlar-Sql-Formatter#readme",
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -29,17 +37,17 @@
       {
         "command": "sqlFormatter.formatDocument",
         "title": "Format SQL Document",
-        "category": "SQL Formatter"
+        "category": "Ashlar - SQL Formatter (T-SQL)"
       },
       {
         "command": "sqlFormatter.formatSelection",
         "title": "Format SQL Selection",
-        "category": "SQL Formatter"
+        "category": "Ashlar - SQL Formatter (T-SQL)"
       },
       {
         "command": "sqlFormatter.openStyleReference",
         "title": "Open Style Reference",
-        "category": "SQL Formatter"
+        "category": "Ashlar - SQL Formatter (T-SQL)"
       }
     ],
     "menus": {
@@ -58,7 +66,7 @@
       ]
     },
     "configuration": {
-      "title": "SQL Formatter",
+      "title": "Ashlar - SQL Formatter (T-SQL)",
       "properties": {
         "sqlFormatter.case.alias": {
           "type": "string",
@@ -1188,7 +1196,7 @@
     "build": "npm run build:page",
     "vscode:prepublish": "npm run build:page",
     "build-tests": "tsc -p ./tsconfig.test.json",
-    "test": "npm run build-tests && node --test out-test/test/*.test.js"
+    "test": "npm run build-tests && node tools/run-tests.js"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

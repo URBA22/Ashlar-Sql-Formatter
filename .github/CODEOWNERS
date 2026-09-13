@@ -1,0 +1,8 @@
+# Code owners for Ashlar SQL Formatter
+# https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# Owners listed here are requested for review automatically on every pull
+# request touching a matching path — including Dependabot's (see dependabot.yml).
+
+# Sole maintainer: everything in the repository.
+* @URBA22

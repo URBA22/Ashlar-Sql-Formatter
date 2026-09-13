@@ -2,6 +2,9 @@ import { DEFAULT_OPTIONS } from './formatter';
 
 export const CONFIG_SECTION = 'sqlFormatter';
 
+/** The name the extension presents itself under, in the palette and the UI. */
+export const EXTENSION_NAME = 'Ashlar - SQL Formatter (T-SQL)';
+
 /** Settings that describe the style; `newline` is derived from the document. */
 const NOT_A_STYLE_SETTING = new Set(['newline']);
 
