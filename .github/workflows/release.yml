@@ -33,7 +33,7 @@ jobs:
     # manual approval gate before anything reaches the Marketplace.
     environment: marketplace
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v7
         with:
