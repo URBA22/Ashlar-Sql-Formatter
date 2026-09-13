@@ -65,7 +65,7 @@ jobs:
         run: npx --yes @vscode/vsce@3 package --out sql-formatter.vsix
 
       - name: Upload vsix
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sql-formatter-vsix
           path: sql-formatter.vsix
