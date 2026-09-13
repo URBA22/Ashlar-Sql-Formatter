@@ -240,6 +240,11 @@ every example through the formatter and fails if a setting is missing from every
 group or if a demo value is the same as its default. The same build emits
 `build/artifact-page.html`, the standalone version published on the web.
 
+`npm test` compiles `test/` to `out-test/` and hands the compiled
+`*.test.js` files to node's built-in runner through
+`tools/run-tests.js`, which collects them itself so the command behaves the same
+on every supported node version and on Windows.
+
 Press `F5` in VS Code to launch an Extension Development Host.
 
 The engine in `src/formatter/` has no dependency on the

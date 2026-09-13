@@ -1196,7 +1196,7 @@
     "build": "npm run build:page",
     "vscode:prepublish": "npm run build:page",
     "build-tests": "tsc -p ./tsconfig.test.json",
-    "test": "npm run build-tests && node --test out-test/test/*.test.js"
+    "test": "npm run build-tests && node tools/run-tests.js"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

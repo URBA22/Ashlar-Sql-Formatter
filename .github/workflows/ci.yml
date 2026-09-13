@@ -16,7 +16,7 @@ concurrency:
 
 defaults:
   run:
-    # bash on every runner, so `node --test out-test/test/*.test.js` globs the same way.
+    # bash on every runner, so the same step commands work across the matrix.
     shell: bash
 
 jobs:
