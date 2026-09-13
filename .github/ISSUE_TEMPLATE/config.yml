@@ -1,0 +1,7 @@
+blank_issues_enabled: false
+
+# Uncomment once Discussions is enabled on the repository, and replace OWNER/REPO.
+# contact_links:
+#   - name: Question or idea
+#     url: https://github.com/OWNER/REPO/discussions
+#     about: For anything that is not a concrete bug or a specific setting request.

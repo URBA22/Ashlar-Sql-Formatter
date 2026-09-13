@@ -1,0 +1,1199 @@
+{
+  "name": "ashlar-sql-formatter",
+  "displayName": "Ashlar - SQL Formatter (T-SQL)",
+  "description": "Opinionated, dialect-aware SQL formatter with first-class T-SQL support.",
+  "version": "0.1.0",
+  "publisher": "kymos",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Formatters",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "sql",
+    "tsql",
+    "formatter",
+    "sql server",
+    "beautify"
+  ],
+  "icon": "assets/icon.png",
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onLanguage:sql"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "sqlFormatter.formatDocument",
+        "title": "Format SQL Document",
+        "category": "SQL Formatter"
+      },
+      {
+        "command": "sqlFormatter.formatSelection",
+        "title": "Format SQL Selection",
+        "category": "SQL Formatter"
+      },
+      {
+        "command": "sqlFormatter.openStyleReference",
+        "title": "Open Style Reference",
+        "category": "SQL Formatter"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "sqlFormatter.formatDocument",
+          "when": "editorLangId == sql"
+        },
+        {
+          "command": "sqlFormatter.formatSelection",
+          "when": "editorLangId == sql && editorHasSelection"
+        },
+        {
+          "command": "sqlFormatter.openStyleReference"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "SQL Formatter",
+      "properties": {
+        "sqlFormatter.case.alias": {
+          "type": "string",
+          "enum": [
+            "upper",
+            "lower",
+            "preserve"
+          ],
+          "default": "preserve",
+          "description": "Word case for aliases introduced with AS.",
+          "scope": "resource"
+        },
+        "sqlFormatter.case.builtInFunction": {
+          "type": "string",
+          "enum": [
+            "upper",
+            "lower",
+            "preserve"
+          ],
+          "default": "upper",
+          "description": "Word case for built-in functions.",
+          "scope": "resource"
+        },
+        "sqlFormatter.case.builtInType": {
+          "type": "string",
+          "enum": [
+            "upper",
+            "lower",
+            "preserve"
+          ],
+          "default": "upper",
+          "description": "Word case for built-in data types.",
+          "scope": "resource"
+        },
+        "sqlFormatter.case.customFunction": {
+          "type": "string",
+          "enum": [
+            "upper",
+            "lower",
+            "preserve"
+          ],
+          "default": "preserve",
+          "description": "Word case for user-defined function names.",
+          "scope": "resource"
+        },
+        "sqlFormatter.case.identifier": {
+          "type": "string",
+          "enum": [
+            "upper",
+            "lower",
+            "preserve"
+          ],
+          "default": "preserve",
+          "description": "Word case for identifiers. Quoted identifiers are never re-cased.",
+          "scope": "resource"
+        },
+        "sqlFormatter.case.keyword": {
+          "type": "string",
+          "enum": [
+            "upper",
+            "lower",
+            "preserve"
+          ],
+          "default": "upper",
+          "description": "Word case for reserved keywords.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.block.collapseWhenShort": {
+          "type": "boolean",
+          "default": false,
+          "description": "Join short multiline blocks.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.block.indentEnd": {
+          "type": "boolean",
+          "default": false,
+          "description": "Add an indent before the closing END.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.block.indentThenAndElse": {
+          "type": "boolean",
+          "default": false,
+          "description": "Add an indent before THEN and ELSE.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.block.wrapElse": {
+          "type": "boolean",
+          "default": true,
+          "description": "Move ELSE to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.block.wrapInnerCode": {
+          "type": "boolean",
+          "default": true,
+          "description": "Move the inner code of a block to a new line and indent it.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.block.wrapThen": {
+          "type": "boolean",
+          "default": false,
+          "description": "Move THEN to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.declaredVariables.alignAssignments": {
+          "type": "boolean",
+          "default": false,
+          "description": "Align variable assignments.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.declaredVariables.alignExpressions": {
+          "type": "boolean",
+          "default": false,
+          "description": "Align assigned values.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.declaredVariables.alignTypes": {
+          "type": "boolean",
+          "default": false,
+          "description": "Align variable types.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.declaredVariables.wrapSection": {
+          "type": "boolean",
+          "default": true,
+          "description": "Move the declaration section to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.declaredVariables.wrapVariables": {
+          "type": "string",
+          "enum": [
+            "chop",
+            "chopIfLong",
+            "wrapIfLong",
+            "doNotChange"
+          ],
+          "default": "chop",
+          "description": "Move each declared variable to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.loops.collapseWhenShort": {
+          "type": "boolean",
+          "default": false,
+          "description": "Join short multiline loops.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.loops.indentEndLoop": {
+          "type": "boolean",
+          "default": false,
+          "description": "Add an indent before END LOOP.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.loops.indentLoop": {
+          "type": "boolean",
+          "default": false,
+          "description": "Add an indent before LOOP.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.loops.wrapLoop": {
+          "type": "boolean",
+          "default": false,
+          "description": "Move LOOP to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.routineArguments.closingParenthesis": {
+          "type": "string",
+          "enum": [
+            "atTheEnd",
+            "underOpening",
+            "underElements"
+          ],
+          "default": "atTheEnd",
+          "description": "Placement of the routine argument list closing parenthesis.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.routineArguments.elements": {
+          "type": "string",
+          "enum": [
+            "sameLineAligned",
+            "wrappedUnindented",
+            "wrappedAligned",
+            "wrappedIndented"
+          ],
+          "default": "sameLineAligned",
+          "description": "Placement of routine arguments relative to the parenthesis.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.routineArguments.newLineAfterComma": {
+          "type": "boolean",
+          "default": true,
+          "description": "Allow a line break after the comma.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.routineArguments.openingParenthesis": {
+          "type": "string",
+          "enum": [
+            "sameLine",
+            "indented",
+            "aligned"
+          ],
+          "default": "sameLine",
+          "description": "Placement of the routine argument list opening parenthesis.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.routineArguments.placeComma": {
+          "type": "string",
+          "enum": [
+            "toBegin",
+            "toEnd",
+            "auto",
+            "inTheMiddle",
+            "asInCommon"
+          ],
+          "default": "toEnd",
+          "description": "Comma positioning in the routine argument list.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.routineArguments.spacesWithinParentheses": {
+          "type": "boolean",
+          "default": false,
+          "description": "Add a space after the opening and before the closing parenthesis.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.routineArguments.wrapElements": {
+          "type": "string",
+          "enum": [
+            "chop",
+            "chopIfLong",
+            "wrapIfLong",
+            "doNotChange"
+          ],
+          "default": "chopIfLong",
+          "description": "Move routine arguments to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.statements.keepBlankLinesInCode": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 1,
+          "description": "Maximum number of blank lines kept between instructions.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.statements.newLineAroundSemicolon": {
+          "type": "boolean",
+          "default": false,
+          "description": "Move the semicolon to its own line between statements.",
+          "scope": "resource"
+        },
+        "sqlFormatter.code.statements.wrapEveryStatement": {
+          "type": "boolean",
+          "default": true,
+          "description": "Place every statement on a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.ddl.alignAlterInstructions": {
+          "type": "boolean",
+          "default": false,
+          "description": "Align ALTER instructions.",
+          "scope": "resource"
+        },
+        "sqlFormatter.ddl.alignDefaults": {
+          "type": "boolean",
+          "default": false,
+          "description": "Align DEFAULT constraints.",
+          "scope": "resource"
+        },
+        "sqlFormatter.ddl.alignNullabilities": {
+          "type": "boolean",
+          "default": false,
+          "description": "Align NULL and NOT NULL constraints.",
+          "scope": "resource"
+        },
+        "sqlFormatter.ddl.alignTypes": {
+          "type": "boolean",
+          "default": false,
+          "description": "Align column data types.",
+          "scope": "resource"
+        },
+        "sqlFormatter.ddl.closingParenthesis": {
+          "type": "string",
+          "enum": [
+            "atTheEnd",
+            "underOpening",
+            "underElements"
+          ],
+          "default": "underOpening",
+          "description": "Placement of the DDL closing parenthesis.",
+          "scope": "resource"
+        },
+        "sqlFormatter.ddl.collapseWhenShort": {
+          "type": "boolean",
+          "default": true,
+          "description": "Join short multiline DDL sections.",
+          "scope": "resource"
+        },
+        "sqlFormatter.ddl.constraints.wrapCascadeAndDeferrability": {
+          "type": "boolean",
+          "default": false,
+          "description": "Move CASCADE and deferrability options to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.ddl.constraints.wrapConstraint": {
+          "type": "boolean",
+          "default": true,
+          "description": "Move CONSTRAINT to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.ddl.constraints.wrapKeyCheck": {
+          "type": "boolean",
+          "default": false,
+          "description": "Move KEY and CHECK to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.ddl.constraints.wrapReferences": {
+          "type": "boolean",
+          "default": false,
+          "description": "Move REFERENCES to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.ddl.elements": {
+          "type": "string",
+          "enum": [
+            "sameLineAligned",
+            "wrappedUnindented",
+            "wrappedAligned",
+            "wrappedIndented"
+          ],
+          "default": "wrappedIndented",
+          "description": "Placement of DDL elements relative to the parenthesis.",
+          "scope": "resource"
+        },
+        "sqlFormatter.ddl.openingParenthesis": {
+          "type": "string",
+          "enum": [
+            "sameLine",
+            "indented",
+            "aligned"
+          ],
+          "default": "sameLine",
+          "description": "Placement of the DDL opening parenthesis.",
+          "scope": "resource"
+        },
+        "sqlFormatter.ddl.postfix.alignOptions": {
+          "type": "boolean",
+          "default": false,
+          "description": "Align postfix options.",
+          "scope": "resource"
+        },
+        "sqlFormatter.ddl.postfix.indentOptions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Indent postfix options.",
+          "scope": "resource"
+        },
+        "sqlFormatter.ddl.postfix.wrapFirstOption": {
+          "type": "boolean",
+          "default": true,
+          "description": "Move the first postfix option to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.ddl.postfix.wrapNextOption": {
+          "type": "boolean",
+          "default": true,
+          "description": "Move subsequent postfix options to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.ddl.schema.indentContent": {
+          "scope": "resource",
+          "type": "boolean",
+          "default": true,
+          "description": "Indent the declarations written inside a CREATE SCHEMA statement."
+        },
+        "sqlFormatter.ddl.schema.maxBlankLinesBetweenDeclarations": {
+          "scope": "resource",
+          "type": "integer",
+          "minimum": 0,
+          "default": 1,
+          "description": "Most blank lines kept between two DDL declarations."
+        },
+        "sqlFormatter.ddl.schema.minBlankLinesBetweenDeclarations": {
+          "scope": "resource",
+          "type": "integer",
+          "minimum": 0,
+          "default": 0,
+          "description": "Blank lines forced between two DDL declarations."
+        },
+        "sqlFormatter.ddl.spacesWithinParentheses": {
+          "type": "boolean",
+          "default": false,
+          "description": "Add a space after the opening and before the closing parenthesis.",
+          "scope": "resource"
+        },
+        "sqlFormatter.ddl.view.indentQuery": {
+          "type": "boolean",
+          "default": true,
+          "description": "Indent the body of a view query.",
+          "scope": "resource"
+        },
+        "sqlFormatter.ddl.view.wrapAs": {
+          "type": "boolean",
+          "default": false,
+          "description": "Move the AS clause of a view to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.ddl.view.wrapQueryBeginning": {
+          "type": "boolean",
+          "default": true,
+          "description": "Move the start of a view query to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.ddl.wrapAlterInstructions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Move ALTER instructions to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.dialect": {
+          "type": "string",
+          "enum": [
+            "tsql",
+            "postgresql",
+            "mysql",
+            "sqlite",
+            "oracle",
+            "standard"
+          ],
+          "default": "tsql",
+          "description": "SQL dialect used for keyword recognition and lexing rules (identifier quoting, comment syntax, variable prefixes).",
+          "scope": "resource"
+        },
+        "sqlFormatter.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Register this extension as a formatting provider for SQL documents."
+        },
+        "sqlFormatter.expressions.alignOperandsInBinaryExpressions": {
+          "type": "boolean",
+          "default": false,
+          "description": "Align operands of a binary expression across lines.",
+          "scope": "resource"
+        },
+        "sqlFormatter.expressions.caseClause.alignElseUnderThenWhenThenAligned": {
+          "type": "boolean",
+          "default": false,
+          "description": "Place ELSE below an aligned THEN.",
+          "scope": "resource"
+        },
+        "sqlFormatter.expressions.caseClause.alignEnd": {
+          "type": "string",
+          "enum": [
+            "withCase",
+            "withWhen",
+            "lineEnd"
+          ],
+          "default": "withCase",
+          "description": "Align END with CASE, with WHEN, or at the end of the line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.expressions.caseClause.alignThen": {
+          "type": "boolean",
+          "default": false,
+          "description": "Align all THEN keywords.",
+          "scope": "resource"
+        },
+        "sqlFormatter.expressions.caseClause.collapseShortClause": {
+          "type": "boolean",
+          "default": true,
+          "description": "Join multiline short CASE clauses.",
+          "scope": "resource"
+        },
+        "sqlFormatter.expressions.caseClause.indentWhenIfWrapped": {
+          "type": "boolean",
+          "default": true,
+          "description": "Indent WHEN when it is wrapped.",
+          "scope": "resource"
+        },
+        "sqlFormatter.expressions.caseClause.keepNewLineAfterThenElse": {
+          "type": "boolean",
+          "default": true,
+          "description": "Keep line breaks after THEN and ELSE.",
+          "scope": "resource"
+        },
+        "sqlFormatter.expressions.caseClause.wrapThen": {
+          "type": "boolean",
+          "default": false,
+          "description": "Move THEN to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.expressions.caseClause.wrapWhen": {
+          "type": "boolean",
+          "default": true,
+          "description": "Move WHEN to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.expressions.placeCommaToBegin": {
+          "type": "boolean",
+          "default": false,
+          "description": "Move commas to the start of the next line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.expressions.spaceAfterComma": {
+          "type": "boolean",
+          "default": true,
+          "description": "Add a space after a comma.",
+          "scope": "resource"
+        },
+        "sqlFormatter.expressions.spaceBeforeComma": {
+          "type": "boolean",
+          "default": false,
+          "description": "Add a space before a comma.",
+          "scope": "resource"
+        },
+        "sqlFormatter.expressions.spaceBeforeOpeningParenthesis": {
+          "type": "boolean",
+          "default": false,
+          "description": "Add a space before an opening parenthesis.",
+          "scope": "resource"
+        },
+        "sqlFormatter.expressions.spaceBetweenParenthesizedSubExpressions": {
+          "type": "boolean",
+          "default": false,
+          "description": "Add a space inside parenthesised sub-expressions.",
+          "scope": "resource"
+        },
+        "sqlFormatter.expressions.spacesAroundOperators": {
+          "type": "boolean",
+          "default": true,
+          "description": "Add a space before and after an operator.",
+          "scope": "resource"
+        },
+        "sqlFormatter.expressions.spacesWithinParentheses": {
+          "type": "boolean",
+          "default": false,
+          "description": "Add a space after the opening parenthesis and before the closing parenthesis.",
+          "scope": "resource"
+        },
+        "sqlFormatter.indents.continuationIndent": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 4,
+          "description": "Indentation for lines continuing the previous line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.indents.indent": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 4,
+          "description": "Number of spaces inserted for each indent level.",
+          "scope": "resource"
+        },
+        "sqlFormatter.indents.keepIndentsOnEmptyLines": {
+          "type": "boolean",
+          "default": false,
+          "description": "Keep indentation on blank lines as if they contained code.",
+          "scope": "resource"
+        },
+        "sqlFormatter.indents.smartTabs": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indent nested blocks with tabs and align with spaces. Only applies when Use tab character is on.",
+          "scope": "resource"
+        },
+        "sqlFormatter.indents.tabSize": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 4,
+          "description": "Number of spaces included in a tab.",
+          "scope": "resource"
+        },
+        "sqlFormatter.indents.useEditorIndentation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Take tab size and tabs-vs-spaces from the editor instead of the settings below.",
+          "scope": "resource"
+        },
+        "sqlFormatter.indents.useTabCharacter": {
+          "type": "boolean",
+          "default": false,
+          "description": "Use the Tab key for indentation. When cleared, spaces are used instead of tabs.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.common.alignFirstWordOfClause": {
+          "type": "string",
+          "enum": [
+            "toLeft",
+            "toLeftWithIndent",
+            "toRight"
+          ],
+          "default": "toLeft",
+          "description": "Align keywords to the left or right margin of the first word of a statement section.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.common.alignLineCommentsAtRightOfElements": {
+          "type": "boolean",
+          "default": false,
+          "description": "Align line comments that sit to the right of elements.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.common.alignSectionElements": {
+          "type": "boolean",
+          "default": true,
+          "description": "Align elements of a clause section.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.common.collapseShortStatements": {
+          "type": "string",
+          "enum": [
+            "enabled",
+            "subqueriesOnly",
+            "disabled"
+          ],
+          "default": "subqueriesOnly",
+          "description": "Join multiline short statements.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.common.keepElementsUnderSectionHeader": {
+          "type": "boolean",
+          "default": false,
+          "description": "Position elements beneath the main keyword instead of after it.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.common.placeClauseElementsOn": {
+          "type": "string",
+          "enum": [
+            "newLine",
+            "sameLine"
+          ],
+          "default": "newLine",
+          "description": "Whether clause elements move to new lines.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.common.placeComma": {
+          "type": "string",
+          "enum": [
+            "toBegin",
+            "toEnd",
+            "auto"
+          ],
+          "default": "toEnd",
+          "description": "Comma positioning within statements.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.from.alignJoinedTables": {
+          "type": "boolean",
+          "default": false,
+          "description": "Align table names in JOIN clauses.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.from.alignTableAliases": {
+          "type": "boolean",
+          "default": false,
+          "description": "Align table aliases in JOIN clauses.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.from.indentJoin": {
+          "type": "boolean",
+          "default": true,
+          "description": "Add an indent before the JOIN clause.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.from.placeComma": {
+          "type": "string",
+          "enum": [
+            "toBegin",
+            "toEnd",
+            "auto",
+            "asInCommon"
+          ],
+          "default": "asInCommon",
+          "description": "Comma positioning in the FROM list.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.from.placeElementsOn": {
+          "type": "string",
+          "enum": [
+            "newLine",
+            "sameLine",
+            "asInCommon"
+          ],
+          "default": "asInCommon",
+          "description": "Whether FROM elements move to new lines.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.from.placeJoinInJoinOnlyQueriesUnder": {
+          "type": "string",
+          "enum": [
+            "table",
+            "fromIndented",
+            "from"
+          ],
+          "default": "fromIndented",
+          "description": "Alignment reference for JOIN in join-only queries.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.from.placeOnUsingUnder": {
+          "type": "string",
+          "enum": [
+            "table",
+            "tableIndented"
+          ],
+          "default": "tableIndented",
+          "description": "Alignment reference for ON and USING clauses.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.from.wrapElements": {
+          "type": "string",
+          "enum": [
+            "chop",
+            "chopIfLong",
+            "wrapIfLong",
+            "doNotChange"
+          ],
+          "default": "chopIfLong",
+          "description": "Move FROM elements to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.from.wrapFirstJoin": {
+          "type": "boolean",
+          "default": true,
+          "description": "Move the first JOIN in the SELECT statement to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.from.wrapNextJoin": {
+          "type": "boolean",
+          "default": true,
+          "description": "Move subsequent JOINs in the SELECT statement to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.from.wrapOnUsing": {
+          "type": "boolean",
+          "default": false,
+          "description": "Move ON and USING to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.insert.alignMultiRowValues": {
+          "type": "boolean",
+          "default": false,
+          "description": "Align columns across the rows of a multi-row VALUES.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.insert.closingParenthesis": {
+          "type": "string",
+          "enum": [
+            "atTheEnd",
+            "underOpening",
+            "underElements"
+          ],
+          "default": "atTheEnd",
+          "description": "Placement of the closing parenthesis.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.insert.collapseShortMultiRowValues": {
+          "type": "boolean",
+          "default": true,
+          "description": "Place short multi-row VALUES on a single line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.insert.elements": {
+          "type": "string",
+          "enum": [
+            "sameLineAligned",
+            "wrappedUnindented",
+            "wrappedAligned",
+            "wrappedIndented"
+          ],
+          "default": "sameLineAligned",
+          "description": "Placement of columns or values relative to the parenthesis.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.insert.openingParenthesis": {
+          "type": "string",
+          "enum": [
+            "sameLine",
+            "indented",
+            "aligned"
+          ],
+          "default": "sameLine",
+          "description": "Align or indent the opening parenthesis under the first keyword.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.insert.placeComma": {
+          "type": "string",
+          "enum": [
+            "toBegin",
+            "toEnd",
+            "auto",
+            "asInCommon"
+          ],
+          "default": "asInCommon",
+          "description": "Comma positioning in column and value lists.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.insert.placeIntoClauseElementsOn": {
+          "type": "string",
+          "enum": [
+            "newLine",
+            "sameLine",
+            "asInCommon"
+          ],
+          "default": "asInCommon",
+          "description": "Placement of elements following INTO.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.insert.placeIntoOnNewLine": {
+          "type": "boolean",
+          "default": false,
+          "description": "Move the INTO keyword to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.insert.placeValuesRowsOn": {
+          "type": "string",
+          "enum": [
+            "newLine",
+            "sameLine",
+            "asInCommon"
+          ],
+          "default": "asInCommon",
+          "description": "Placement of rows following VALUES.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.insert.spacesWithinParentheses": {
+          "type": "boolean",
+          "default": false,
+          "description": "Add a space after the opening and before the closing parenthesis.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.insert.wrapColumnsOrValues": {
+          "type": "string",
+          "enum": [
+            "chop",
+            "chopIfLong",
+            "wrapIfLong",
+            "doNotChange"
+          ],
+          "default": "chopIfLong",
+          "description": "Move columns or values to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.orderGroupBy.alignAscDesc": {
+          "type": "boolean",
+          "default": false,
+          "description": "Align all ASC and DESC keywords.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.orderGroupBy.placeComma": {
+          "type": "string",
+          "enum": [
+            "toBegin",
+            "toEnd",
+            "auto",
+            "asInCommon"
+          ],
+          "default": "asInCommon",
+          "description": "Comma positioning in GROUP BY and ORDER BY.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.orderGroupBy.placeElementsOn": {
+          "type": "string",
+          "enum": [
+            "newLine",
+            "sameLine",
+            "asInCommon"
+          ],
+          "default": "asInCommon",
+          "description": "Whether GROUP BY and ORDER BY elements move to new lines.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.orderGroupBy.wrapElements": {
+          "type": "string",
+          "enum": [
+            "chop",
+            "chopIfLong",
+            "wrapIfLong",
+            "doNotChange"
+          ],
+          "default": "chopIfLong",
+          "description": "Move GROUP BY and ORDER BY elements to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.select.alignAs": {
+          "type": "boolean",
+          "default": false,
+          "description": "Align all AS keywords.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.select.keepElementsOnOneLineIfUpTo": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 1,
+          "description": "Maximum number of elements kept on one line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.select.newLineAfterAllDistinct": {
+          "type": "boolean",
+          "default": false,
+          "description": "Add a line break after ALL and DISTINCT.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.select.placeComma": {
+          "type": "string",
+          "enum": [
+            "toBegin",
+            "toEnd",
+            "auto",
+            "asInCommon"
+          ],
+          "default": "asInCommon",
+          "description": "Comma positioning in the SELECT list.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.select.placeElementsOn": {
+          "type": "string",
+          "enum": [
+            "newLine",
+            "sameLine",
+            "asInCommon"
+          ],
+          "default": "asInCommon",
+          "description": "Whether SELECT elements move to new lines.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.select.useAs": {
+          "type": "boolean",
+          "default": false,
+          "description": "Always use AS for aliases.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.select.wrapElements": {
+          "type": "string",
+          "enum": [
+            "chop",
+            "chopIfLong",
+            "wrapIfLong",
+            "doNotChange"
+          ],
+          "default": "chop",
+          "description": "Move SELECT elements to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.subquery.closingParenthesis": {
+          "type": "string",
+          "enum": [
+            "atTheEnd",
+            "underOpening",
+            "underElements"
+          ],
+          "default": "underOpening",
+          "description": "Placement of a subquery closing parenthesis.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.subquery.elements": {
+          "type": "string",
+          "enum": [
+            "sameLineAligned",
+            "wrappedUnindented",
+            "wrappedAligned",
+            "wrappedIndented"
+          ],
+          "default": "wrappedIndented",
+          "description": "Placement of the subquery within its parentheses.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.subquery.openingParenthesis": {
+          "type": "string",
+          "enum": [
+            "sameLine",
+            "indented",
+            "aligned"
+          ],
+          "default": "sameLine",
+          "description": "Placement of a subquery opening parenthesis.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.subquery.spacesWithinParentheses": {
+          "type": "boolean",
+          "default": false,
+          "description": "Add a space after the opening and before the closing parenthesis.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.update.alignEqualSign": {
+          "type": "boolean",
+          "default": false,
+          "description": "Align all equal signs in the SET list.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.update.placeComma": {
+          "type": "string",
+          "enum": [
+            "toBegin",
+            "toEnd",
+            "auto",
+            "asInCommon"
+          ],
+          "default": "asInCommon",
+          "description": "Comma positioning in the SET list.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.update.placeElementsOn": {
+          "type": "string",
+          "enum": [
+            "newLine",
+            "sameLine",
+            "asInCommon"
+          ],
+          "default": "asInCommon",
+          "description": "Whether UPDATE assignments move to new lines.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.update.wrapElements": {
+          "type": "string",
+          "enum": [
+            "chop",
+            "chopIfLong",
+            "wrapIfLong",
+            "doNotChange"
+          ],
+          "default": "chop",
+          "description": "Move UPDATE assignments to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.where.alignAs": {
+          "type": "boolean",
+          "default": false,
+          "description": "Align all AS keywords.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.where.placeElementsOn": {
+          "type": "string",
+          "enum": [
+            "newLine",
+            "sameLine",
+            "asInCommon"
+          ],
+          "default": "asInCommon",
+          "description": "Whether WHERE and HAVING elements move to new lines.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.where.placeTopLevelBooleanOperator": {
+          "type": "string",
+          "enum": [
+            "toBegin",
+            "toEnd"
+          ],
+          "default": "toBegin",
+          "description": "Place top-level AND / OR at the beginning or the end of the line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.where.wrapElements": {
+          "type": "string",
+          "enum": [
+            "chop",
+            "chopIfLong",
+            "wrapIfLong",
+            "doNotChange"
+          ],
+          "default": "chopIfLong",
+          "description": "Move WHERE and HAVING elements to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.with.alignAs": {
+          "type": "boolean",
+          "default": false,
+          "description": "Align all AS keywords.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.with.placeComma": {
+          "type": "string",
+          "enum": [
+            "toBegin",
+            "toEnd",
+            "auto",
+            "inTheMiddle",
+            "asInCommon"
+          ],
+          "default": "asInCommon",
+          "description": "Comma positioning between CTEs.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.with.placeElementsOn": {
+          "type": "string",
+          "enum": [
+            "newLine",
+            "sameLine",
+            "asInCommon"
+          ],
+          "default": "asInCommon",
+          "description": "Whether WITH elements move to new lines.",
+          "scope": "resource"
+        },
+        "sqlFormatter.queries.with.wrapSubqueries": {
+          "type": "string",
+          "enum": [
+            "chop",
+            "chopIfLong",
+            "wrapIfLong",
+            "doNotChange"
+          ],
+          "default": "chop",
+          "description": "Move each CTE to a new line.",
+          "scope": "resource"
+        },
+        "sqlFormatter.wrapping.commentAtFirstColumn": {
+          "type": "boolean",
+          "default": true,
+          "description": "Keep comments that start at column one at the first column.",
+          "scope": "resource"
+        },
+        "sqlFormatter.wrapping.keepLineBreaks": {
+          "type": "boolean",
+          "default": true,
+          "description": "Preserve line breaks when you reformat your code.",
+          "scope": "resource"
+        },
+        "sqlFormatter.wrapping.rightMargin": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 120,
+          "description": "Hard wrap column. Groups and lists that do not fit are broken across lines.",
+          "scope": "resource"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "build:page": "npm run compile && node tools/style-page/build.js",
+    "build": "npm run build:page",
+    "vscode:prepublish": "npm run build:page",
+    "build-tests": "tsc -p ./tsconfig.test.json",
+    "test": "npm run build-tests && node --test out-test/test/*.test.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.90.0",
+    "esbuild": "^0.28.2",
+    "typescript": "^5.6.0"
+  }
+}

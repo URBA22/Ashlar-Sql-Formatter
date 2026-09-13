@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="stone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#27374B"/>
+      <stop offset="1" stop-color="#111A26"/>
+    </linearGradient>
+    <linearGradient id="block" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F2F6FA"/>
+      <stop offset="1" stop-color="#C9D6E4"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F0B357"/>
+      <stop offset="1" stop-color="#DC8F2C"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="128" height="128" rx="28" fill="url(#stone)"/>
+  <rect x="0.75" y="0.75" width="126.5" height="126.5" rx="27.25" fill="none" stroke="#5A7392" stroke-opacity="0.35" stroke-width="1.5"/>
+
+  <g fill="url(#block)">
+    <rect x="26" y="24" width="28" height="14" rx="3"/>
+    <rect x="58" y="24" width="16" height="14" rx="3"/>
+    <rect x="78" y="24" width="20" height="14" rx="3"/>
+
+    <rect x="50" y="46" width="38" height="14" rx="3"/>
+
+    <rect x="26" y="68" width="32" height="14" rx="3"/>
+    <rect x="62" y="68" width="12" height="14" rx="3"/>
+    <rect x="78" y="68" width="16" height="14" rx="3"/>
+
+    <rect x="26" y="90" width="24" height="14" rx="3"/>
+    <rect x="54" y="90" width="18" height="14" rx="3"/>
+  </g>
+
+  <rect x="26" y="46" width="20" height="14" rx="3" fill="url(#accent)"/>
+</svg>

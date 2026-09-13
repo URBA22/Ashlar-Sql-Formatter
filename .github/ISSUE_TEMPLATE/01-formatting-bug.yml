@@ -1,0 +1,91 @@
+name: Wrong formatting output
+description: The formatter produced output you did not expect.
+title: '[format]: '
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. The single most useful thing
+        you can include is the **smallest SQL snippet that still shows the
+        problem** — it goes straight into the test suite as a regression, and a
+        report with one is usually fixed in one sitting.
+
+  - type: textarea
+    id: input
+    attributes:
+      label: Input SQL
+      description: The smallest snippet that reproduces it. Real column names are not needed.
+      render: sql
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual output
+      description: What the formatter produced.
+      render: sql
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected output
+      description: What you expected instead.
+      render: sql
+    validations:
+      required: true
+
+  - type: dropdown
+    id: dialect
+    attributes:
+      label: Dialect
+      description: The value of `sqlFormatter.dialect`.
+      options:
+        - tsql (default)
+        - postgresql
+        - mysql
+        - sqlite
+        - oracle
+        - standard
+    validations:
+      required: true
+
+  - type: textarea
+    id: settings
+    attributes:
+      label: Non-default settings
+      description: >
+        Any `sqlFormatter.*` entries you have changed from their defaults. Leave
+        blank if you are on defaults throughout. The Style Reference panel marks
+        the values set in each scope, which makes these easy to collect.
+      render: jsonc
+
+  - type: input
+    id: version
+    attributes:
+      label: Extension version
+      placeholder: '0.1.0'
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: VS Code version and OS
+      placeholder: '1.95.0, Windows 11'
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched the existing issues for this.
+          required: true
+        - label: >
+            I would be willing to open a pull request for this. (Entirely
+            optional — reporting it is already a contribution.)

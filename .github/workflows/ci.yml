@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    # bash on every runner, so `node --test out-test/test/*.test.js` globs the same way.
+    shell: bash
+
+jobs:
+  test:
+    name: test (${{ matrix.os }}, node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node: ['20', '22']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Compile extension
+        run: npm run compile
+
+      - name: Run tests
+        run: npm test
+
+  package:
+    name: package vsix
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build style reference page
+        run: npm run build
+
+      - name: Package extension
+        # vsce re-runs `vscode:prepublish`, so this also proves the publish path compiles.
+        run: npx --yes @vscode/vsce@3 package --allow-missing-repository --out sql-formatter.vsix
+
+      - name: Upload vsix
+        uses: actions/upload-artifact@v4
+        with:
+          name: sql-formatter-vsix
+          path: sql-formatter.vsix
+          if-no-files-found: error
+          retention-days: 14

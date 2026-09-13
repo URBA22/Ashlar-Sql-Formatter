@@ -1,0 +1,138 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Build and attach the vsix, but do not publish to any marketplace'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  # Required for the OIDC token exchanged with Microsoft Entra ID.
+  id-token: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  release:
+    name: build and publish
+    runs-on: ubuntu-latest
+    # Pins the OIDC subject to `repo:<org>/<repo>:environment:marketplace`, which is
+    # stable across tags. A branch-scoped federated credential would never match a
+    # tag push, and tag subjects cannot be wildcarded. Also the place to add a
+    # manual approval gate before anything reaches the Marketplace.
+    environment: marketplace
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Verify tag matches package.json version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg="$(node -p 'require("./package.json").version')"
+          if [ "$tag" != "$pkg" ]; then
+            echo "::error::Tag v$tag does not match package.json version $pkg"
+            exit 1
+          fi
+          echo "Releasing version $pkg"
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build style reference page
+        run: npm run build
+
+      - name: Package extension
+        id: pack
+        run: |
+          version="$(node -p 'require("./package.json").version')"
+          name="$(node -p 'require("./package.json").name')"
+          file="$name-$version.vsix"
+          npx --yes @vscode/vsce@3 package --allow-missing-repository --out "$file"
+          echo "file=$file" >> "$GITHUB_OUTPUT"
+
+      # Secrets/vars cannot be read from a step-level `if:`, so probe them into outputs
+      # first. Missing configuration skips the matching publish step rather than
+      # failing the release, so tagging works before the identity is wired up.
+      - name: Check publishing configuration
+        id: cfg
+        env:
+          AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: |
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            echo "Dry run requested - skipping all publish steps."
+            echo "entra=false" >> "$GITHUB_OUTPUT"
+            echo "ovsx=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ -n "$AZURE_CLIENT_ID" ] && [ -n "$AZURE_TENANT_ID" ]; then
+            echo "entra=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "entra=false" >> "$GITHUB_OUTPUT"
+          fi
+          [ -n "$OVSX_PAT" ] && echo "ovsx=true" >> "$GITHUB_OUTPUT" || echo "ovsx=false" >> "$GITHUB_OUTPUT"
+
+      # Federated (OIDC) sign-in: no client secret is stored. This leaves an Azure CLI
+      # session that vsce's --azure-credential picks up via AzureCliCredential.
+      - name: Sign in to Microsoft Entra ID
+        if: steps.cfg.outputs.entra == 'true'
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          # The publishing identity needs no Azure subscription, only Marketplace rights.
+          allow-no-subscriptions: true
+
+      - name: Publish to Visual Studio Marketplace
+        if: steps.cfg.outputs.entra == 'true'
+        run: |
+          npx --yes @vscode/vsce@3 publish \
+            --azure-credential \
+            --packagePath "${{ steps.pack.outputs.file }}"
+
+      - name: Publish to Open VSX
+        if: steps.cfg.outputs.ovsx == 'true'
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: npx --yes ovsx@0.10 publish "${{ steps.pack.outputs.file }}" -p "$OVSX_PAT"
+
+      - name: Report skipped publishing
+        if: steps.cfg.outputs.entra != 'true' && steps.cfg.outputs.ovsx != 'true'
+        run: |
+          echo "::notice::No publishing identity configured (or dry run). The vsix is attached to the release only."
+
+      - name: Create GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            "${{ steps.pack.outputs.file }}" \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes
+
+      - name: Upload vsix artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.pack.outputs.file }}
+          path: ${{ steps.pack.outputs.file }}
+          if-no-files-found: error

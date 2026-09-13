@@ -1,0 +1,1135 @@
+<title>SQL Formatter Style Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --paper: #f7f8fa;
+  --surface: #ffffff;
+  --surface-2: #eef1f6;
+  --ink: #1a2030;
+  --ink-2: #5c6779;
+  --ink-3: #8792a5;
+  --line: #dfe4ec;
+  --line-2: #c9d1de;
+  --accent: #3a5bd9;
+  --accent-soft: #e8ecfb;
+  --after: #0e7c66;
+  --after-soft: #e2f2ee;
+  --warn: #8a5c12;
+  --warn-soft: #f8efdb;
+
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --r: 6px;
+  --rail: 264px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #14181f;
+    --surface: #1b2029;
+    --surface-2: #232a35;
+    --ink: #e3e8f0;
+    --ink-2: #98a3b5;
+    --ink-3: #6d7889;
+    --line: #2c3441;
+    --line-2: #3a4454;
+    --accent: #7d9bff;
+    --accent-soft: #1f2940;
+    --after: #4fc3a5;
+    --after-soft: #16302b;
+    --warn: #d6a758;
+    --warn-soft: #2c2519;
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper: #14181f;
+  --surface: #1b2029;
+  --surface-2: #232a35;
+  --ink: #e3e8f0;
+  --ink-2: #98a3b5;
+  --ink-3: #6d7889;
+  --line: #2c3441;
+  --line-2: #3a4454;
+  --accent: #7d9bff;
+  --accent-soft: #1f2940;
+  --after: #4fc3a5;
+  --after-soft: #16302b;
+  --warn: #d6a758;
+  --warn-soft: #2c2519;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+
+code, pre { font-family: var(--mono); }
+
+.masthead {
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.masthead-inner {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding-block: 22px 20px;
+  padding-inline: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 32px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.wordmark {
+  font-family: var(--mono);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.wordmark .caret { color: var(--accent); }
+
+.tagline {
+  margin: 6px 0 0;
+  color: var(--ink-2);
+  font-size: 14px;
+  max-width: 62ch;
+}
+
+.counts {
+  display: flex;
+  gap: 26px;
+  font-variant-numeric: tabular-nums;
+}
+
+.count-n {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.1;
+  display: block;
+}
+
+.count-l {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--ink-3);
+}
+
+.shell {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding-inline: 24px;
+  padding-block: 24px 64px;
+  display: grid;
+  grid-template-columns: var(--rail) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+
+/* ---------- rail ---------- */
+
+.rail { position: sticky; top: 16px; }
+
+.rail-tab {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-3);
+  padding: 16px 10px 6px;
+}
+
+.rail-tab:first-child { padding-top: 4px; }
+
+.rail-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink-2);
+  background: none;
+  border: 0;
+  border-left: 2px solid transparent;
+  padding: 6px 10px;
+  cursor: pointer;
+  border-radius: 0 var(--r) var(--r) 0;
+}
+
+.rail-item:hover { color: var(--ink); background: var(--surface-2); }
+
+.rail-item[aria-current="true"] {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  background: var(--accent-soft);
+  font-weight: 500;
+}
+
+.rail-item .n {
+  float: right;
+  color: var(--ink-3);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.rail-select { display: none; }
+
+/* ---------- group header ---------- */
+
+.group-head { margin-bottom: 20px; }
+
+.group-head h2 {
+  font-family: var(--mono);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.group-head p {
+  margin: 6px 0 0;
+  color: var(--ink-2);
+  max-width: 68ch;
+}
+
+/* ---------- setting card ---------- */
+
+.cards { display: flex; flex-direction: column; gap: 18px; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 16px 18px 18px;
+}
+
+.card-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.card h3 { font-size: 15px; font-weight: 600; }
+
+.path {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink-3);
+  word-break: break-all;
+}
+
+.desc { margin: 6px 0 0; color: var(--ink-2); font-size: 14px; max-width: 70ch; }
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.seg {
+  display: flex;
+  flex-wrap: wrap;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+.seg button {
+  font: inherit;
+  font-size: 13px;
+  font-family: var(--mono);
+  background: var(--surface);
+  color: var(--ink-2);
+  border: 0;
+  border-right: 1px solid var(--line-2);
+  padding: 5px 11px;
+  cursor: pointer;
+}
+
+.seg button:last-child { border-right: 0; }
+.seg button:hover { background: var(--surface-2); color: var(--ink); }
+
+.seg button[aria-pressed="true"] {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 500;
+}
+
+.num-input {
+  font: inherit;
+  font-family: var(--mono);
+  font-size: 13px;
+  width: 76px;
+  padding: 5px 8px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.adopt {
+  font: inherit;
+  font-size: 13px;
+  background: none;
+  color: var(--ink-2);
+  border: 1px dashed var(--line-2);
+  border-radius: var(--r);
+  padding: 5px 11px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.adopt:hover { color: var(--ink); border-color: var(--ink-3); }
+
+.adopt[aria-pressed="true"] {
+  border-style: solid;
+  border-color: var(--after);
+  background: var(--after-soft);
+  color: var(--after);
+  font-weight: 500;
+}
+
+.flag {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--warn);
+  background: var(--warn-soft);
+  border-radius: 3px;
+  padding: 2px 7px;
+  white-space: nowrap;
+}
+
+.flag.info {
+  color: var(--ink-2);
+  background: var(--surface-2);
+}
+
+.seg button.same { color: var(--ink-3); font-style: italic; }
+.seg button.same[aria-pressed="true"] { color: #fff; font-style: normal; }
+
+.coincide {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+
+.coincide b { font-weight: 500; color: var(--ink-2); }
+
+/* ---------- before / after ---------- */
+
+.panes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  margin-top: 14px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+.pane { background: var(--surface); min-width: 0; }
+
+.pane-head {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  padding: 7px 12px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--line);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+}
+
+.pane-head .val {
+  font-family: var(--mono);
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.pane.after .pane-head { color: var(--after); }
+.pane.after .pane-head .val { color: var(--after); }
+
+pre.code {
+  margin: 0;
+  padding: 10px 0;
+  overflow-x: auto;
+  font-size: 12.5px;
+  line-height: 1.65;
+  tab-size: 4;
+}
+
+pre.code .ln {
+  display: block;
+  padding-inline: 12px;
+  border-left: 2px solid transparent;
+  white-space: pre;
+}
+
+pre.code .ln.chg {
+  border-left-color: var(--line-2);
+  background: var(--surface-2);
+}
+
+.pane.after pre.code .ln.chg {
+  border-left-color: var(--after);
+  background: var(--after-soft);
+}
+
+.same {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--ink-3);
+  font-style: italic;
+}
+
+/* ---------- style sheet panel ---------- */
+
+.mystyle {
+  position: sticky;
+  bottom: 0;
+  margin-top: 28px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+}
+
+.mystyle-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.mystyle-head h3 { font-size: 14px; font-weight: 600; }
+.mystyle-head .hint { color: var(--ink-3); font-size: 13px; }
+
+.btn {
+  font: inherit;
+  font-size: 13px;
+  border: 1px solid var(--line-2);
+  background: var(--surface);
+  color: var(--ink);
+  border-radius: var(--r);
+  padding: 5px 12px;
+  cursor: pointer;
+}
+
+.btn:hover { background: var(--surface-2); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 500; }
+.btn.primary:hover { filter: brightness(1.07); }
+
+.mystyle pre {
+  margin: 0;
+  padding: 12px 16px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  overflow-x: auto;
+  max-height: 210px;
+}
+
+button:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+@media (max-width: 900px) {
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .rail { position: static; }
+  .rail-list { display: none; }
+  .rail-select {
+    display: block;
+    width: 100%;
+    font: inherit;
+    font-size: 14px;
+    padding: 9px 10px;
+    border: 1px solid var(--line-2);
+    border-radius: var(--r);
+    background: var(--surface);
+    color: var(--ink);
+  }
+  .panes { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 560px) {
+  .shell { padding-inline: 16px; }
+  .masthead-inner { padding-inline: 16px; }
+  .counts { gap: 18px; }
+  .adopt { margin-left: 0; }
+}
+
+/* ---------- scope bar ---------- */
+
+.scope {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.scope label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--ink-3);
+}
+
+.scope select {
+  font: inherit;
+  font-size: 13px;
+  padding: 5px 9px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.saving {
+  font-size: 12px;
+  color: var(--after);
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.saving.on { opacity: 1; }
+
+/* ---------- modified marker ---------- */
+
+.card.modified { border-left: 2px solid var(--accent); }
+
+.dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-right: 7px;
+  vertical-align: middle;
+}
+
+.reset {
+  font: inherit;
+  font-size: 12px;
+  background: none;
+  border: 0;
+  color: var(--accent);
+  cursor: pointer;
+  padding: 4px 2px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.reset:hover { color: var(--ink); }
+
+.origin {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink-3);
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* ---------- live preview ---------- */
+
+.preview {
+  position: sticky;
+  bottom: 0;
+  margin-top: 28px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+}
+
+.preview-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.preview-head h3 { font-size: 14px; font-weight: 600; }
+.preview-head .hint { color: var(--ink-3); font-size: 13px; }
+
+.btn {
+  font: inherit;
+  font-size: 13px;
+  border: 1px solid var(--line-2);
+  background: var(--surface);
+  color: var(--ink);
+  border-radius: var(--r);
+  padding: 5px 12px;
+  cursor: pointer;
+}
+
+.btn:hover { background: var(--surface-2); }
+
+.preview pre {
+  margin: 0;
+  padding: 12px 16px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  overflow-x: auto;
+  max-height: 260px;
+}
+</style>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div>
+      <div class="wordmark"><span class="caret">&gt;</span> SQL Formatter Style</div>
+      <p class="tagline">
+        Every code-style setting, grouped by section, each shown as its default output
+        beside the output your setting produces — generated live by the formatter itself.
+        Hover a value to preview it; click to apply it.
+      </p>
+    </div>
+    <div class="counts">
+      <div class="scope" id="scope-box" hidden>
+        <label for="scope-select">Scope</label>
+        <select id="scope-select"></select>
+        <span class="saving" id="saving">Saved</span>
+      </div>
+      <div><span class="count-n" id="c-modified">0</span><span class="count-l">Changed</span></div>
+      <div><span class="count-n" id="c-settings">0</span><span class="count-l">Settings</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Setting groups">
+    <select class="rail-select" id="rail-select" aria-label="Setting group"></select>
+    <div class="rail-list" id="rail-list"></div>
+  </nav>
+
+  <main>
+    <div class="group-head">
+      <h2 id="group-name">&nbsp;</h2>
+      <p id="group-blurb">&nbsp;</p>
+    </div>
+    <div class="cards" id="cards"></div>
+
+    <section class="preview" aria-labelledby="preview-h">
+      <div class="preview-head">
+        <h3 id="preview-h">Live preview</h3>
+        <span class="hint" id="preview-hint">Your whole style, applied to one query.</span>
+        <button class="btn" id="copy-btn" type="button">Copy settings JSON</button>
+      </div>
+      <pre id="preview-out"><code></code></pre>
+    </section>
+  </main>
+</div>
+
+<script%NONCE%>/*__BUNDLE__*/</script>
+<script%NONCE%>
+const DATA = /*__DATA__*/;
+const { formatSql, DEFAULT_OPTIONS } = globalThis.SqlFormatter;
+
+const PREVIEW_SQL = "select o.OrderId, o.PlacedAt, case when o.Total >= 1000 then 'large' else 'small' end as Bucket\n"
+  + 'from dbo.Orders o inner join dbo.Customers c on c.CustomerId = o.CustomerId\n'
+  + "where o.PlacedAt >= @FromDate and o.Status = 'open'\n"
+  + 'order by o.PlacedAt desc;';
+
+const el = (tag, cls, text) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text !== undefined) n.textContent = text;
+  return n;
+};
+
+const clone = (v) => JSON.parse(JSON.stringify(v));
+
+const setIn = (obj, path, value) => {
+  const keys = path.split('.');
+  let node = obj;
+  for (const k of keys.slice(0, -1)) {
+    if (typeof node[k] !== 'object' || node[k] === null) node[k] = {};
+    node = node[k];
+  }
+  node[keys[keys.length - 1]] = value;
+  return obj;
+};
+
+/** Longest common subsequence over lines, so unchanged lines stay unmarked. */
+function diffLines(a, b) {
+  const n = a.length, m = b.length;
+  const table = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
+  for (let i = n - 1; i >= 0; i--) {
+    for (let j = m - 1; j >= 0; j--) {
+      table[i][j] = a[i] === b[j] ? table[i + 1][j + 1] + 1
+        : Math.max(table[i + 1][j], table[i][j + 1]);
+    }
+  }
+  const left = new Array(n).fill(true), right = new Array(m).fill(true);
+  let i = 0, j = 0;
+  while (i < n && j < m) {
+    if (a[i] === b[j]) { left[i] = false; right[j] = false; i++; j++; }
+    else if (table[i + 1][j] >= table[i][j + 1]) i++;
+    else j++;
+  }
+  return { left, right };
+}
+
+function codePane(text, changed) {
+  const pre = el('pre', 'code');
+  text.split('\n').forEach((line, idx) => {
+    const span = el('span', changed[idx] ? 'ln chg' : 'ln');
+    span.textContent = line.length ? line : ' ';
+    pre.appendChild(span);
+  });
+  return pre;
+}
+
+/** Which Common setting an `asInCommon` value inherits from. */
+const INHERITS = {
+  placeElementsOn: 'queries.common.placeClauseElementsOn',
+  placeIntoClauseElementsOn: 'queries.common.placeClauseElementsOn',
+  placeValuesRowsOn: 'queries.common.placeClauseElementsOn',
+  placeComma: 'queries.common.placeComma',
+};
+
+const labelFor = (setting, value) => {
+  if (setting.values) {
+    const hit = setting.values.find((v) => v.value === value);
+    const label = hit ? hit.label : String(value);
+    if (value === 'asInCommon') {
+      const source = INHERITS[setting.path.split('.').pop()];
+      const inherited = source ? values[source] : undefined;
+      if (inherited !== undefined) {
+        const shown = setting.values.find((v) => v.value === inherited);
+        return label + ' \u2192 ' + (shown ? shown.label : String(inherited));
+      }
+    }
+    return label;
+  }
+  if (setting.type === 'boolean') return value ? 'On' : 'Off';
+  return String(value);
+};
+
+/* ---------------- state ---------------- */
+
+const STORAGE_KEY = 'sqlformatter.style.v2';
+const ALL = [];
+for (const g of DATA.groups) for (const s of g.settings) ALL.push(s);
+const DEFAULTS = Object.fromEntries(ALL.map((s) => [s.path, s.def]));
+
+/** The value in force for every setting, in the selected scope. */
+let values = { ...DEFAULTS };
+/** Paths explicitly set in the selected scope. */
+let overridden = new Set();
+let groupId = DATA.groups[0].id;
+let scope = 'user';
+let scopeOptions = [];
+
+/**
+ * The page runs in two places: published on the web, where the style lives in
+ * this browser, and inside the extension, where it is read from and written
+ * straight to settings.json as you change it.
+ */
+const vscode = typeof acquireVsCodeApi === 'function' ? acquireVsCodeApi() : null;
+const inEditor = vscode !== null;
+
+if (!inEditor) {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    for (const [path, value] of Object.entries(saved)) {
+      if (Object.prototype.hasOwnProperty.call(DEFAULTS, path)) {
+        values[path] = value;
+        overridden.add(path);
+      }
+    }
+  } catch (e) { /* private window or blocked storage: start from defaults */ }
+}
+
+function persistLocal() {
+  if (inEditor) return;
+  try {
+    const out = {};
+    for (const path of overridden) out[path] = values[path];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(out));
+  } catch (e) { /* ignore */ }
+}
+
+let savingTimer = null;
+function flashSaved() {
+  const badge = document.getElementById('saving');
+  if (!badge) return;
+  badge.classList.add('on');
+  clearTimeout(savingTimer);
+  savingTimer = setTimeout(() => badge.classList.remove('on'), 1100);
+}
+
+/** Applies a value and writes it through, without waiting for a round trip. */
+function setValue(path, value) {
+  values[path] = value;
+  overridden.add(path);
+  if (inEditor) {
+    vscode.postMessage({ type: 'set', path, value, scope });
+    flashSaved();
+  } else {
+    persistLocal();
+  }
+  render();
+}
+
+function resetValue(path) {
+  if (inEditor) {
+    vscode.postMessage({ type: 'reset', path, scope });
+    flashSaved();
+  }
+  values[path] = DEFAULTS[path];
+  overridden.delete(path);
+  persistLocal();
+  render();
+}
+
+/** The complete style, as the formatter takes it. */
+function styleOptions(overrides) {
+  const out = {};
+  for (const [path, value] of Object.entries(values)) setIn(out, path, value);
+  for (const [path, value] of Object.entries(overrides || {})) setIn(out, path, value);
+  return out;
+}
+
+/* ---------------- rail ---------------- */
+
+function buildRail() {
+  const list = document.getElementById('rail-list');
+  const select = document.getElementById('rail-select');
+  let tab = null;
+  for (const g of DATA.groups) {
+    if (g.tab !== tab) {
+      tab = g.tab;
+      list.appendChild(el('div', 'rail-tab', tab));
+    }
+    const btn = el('button', 'rail-item');
+    btn.type = 'button';
+    btn.id = 'rail-' + g.id;
+    btn.appendChild(document.createTextNode(g.name.replace(/^[^\u203a]*\u203a\s*/, '')));
+    btn.appendChild(el('span', 'n', ''));
+    btn.addEventListener('click', () => { groupId = g.id; render(); });
+    list.appendChild(btn);
+
+    const opt = document.createElement('option');
+    opt.value = g.id;
+    opt.textContent = g.name;
+    select.appendChild(opt);
+  }
+  select.addEventListener('change', () => { groupId = select.value; render(); });
+}
+
+/* ---------------- cards ---------------- */
+
+function buildCard(setting) {
+  const value = values[setting.path];
+  const isModified = overridden.has(setting.path);
+  const card = el('div', isModified ? 'card modified' : 'card');
+
+  const top = el('div', 'card-top');
+  const title = el('h3');
+  if (isModified) title.appendChild(el('span', 'dot'));
+  title.appendChild(document.createTextNode(setting.label));
+  top.appendChild(title);
+  top.appendChild(el('span', 'path', setting.id));
+  card.appendChild(top);
+  card.appendChild(el('p', 'desc', setting.description));
+
+  // `preview` is the value the panes show; it follows the pointer so you can
+  // see what an option does before committing to it.
+  const panes = el('div', 'panes');
+  let preview = value;
+
+  function renderPanes() {
+    const before = formatSql(setting.sql, setIn(clone(setting.options), setting.path, setting.def));
+    const after = formatSql(setting.sql, setIn(clone(setting.options), setting.path, preview));
+    const identical = before === after;
+    const { left, right } = diffLines(before.split('\n'), after.split('\n'));
+
+    panes.replaceChildren();
+
+    const paneA = el('div', 'pane before');
+    const headA = el('div', 'pane-head');
+    headA.appendChild(document.createTextNode('Default'));
+    headA.appendChild(el('span', 'val', labelFor(setting, setting.def)));
+    paneA.appendChild(headA);
+    paneA.appendChild(codePane(before, identical ? [] : left));
+    panes.appendChild(paneA);
+
+    const paneB = el('div', 'pane after');
+    const headB = el('div', 'pane-head');
+    headB.appendChild(document.createTextNode(
+      identical ? 'Same output' : (preview === value ? 'Your setting' : 'Preview')));
+    headB.appendChild(el('span', 'val', labelFor(setting, preview)));
+    paneB.appendChild(headB);
+    if (identical) {
+      paneB.appendChild(el('div', 'same', 'Identical to the default output on this example.'));
+    } else {
+      paneB.appendChild(codePane(after, right));
+    }
+    panes.appendChild(paneB);
+  }
+
+  const showPreview = (next) => {
+    if (next === preview) return;
+    preview = next;
+    renderPanes();
+  };
+
+  const controls = el('div', 'controls');
+  let coincideNote = null;
+
+  if (setting.type === 'integer' || setting.type === 'number') {
+    const input = el('input', 'num-input');
+    input.type = 'number';
+    input.id = 'in-' + setting.path;
+    input.value = String(value);
+    input.addEventListener('change', () => {
+      const next = Number(input.value);
+      if (Number.isFinite(next)) setValue(setting.path, next);
+    });
+    controls.appendChild(input);
+  } else {
+    const seg = el('div', 'seg');
+    const options = setting.values
+      ? setting.values
+      : [{ value: false, label: 'Off' }, { value: true, label: 'On' }];
+
+    // Some values cannot differ on a given example -- `chop` and `chop if long`
+    // agree whenever the list is too long either way. Say so rather than leave
+    // the reader hunting for a difference that is not there.
+    const byOutput = new Map();
+    for (const opt of options) {
+      const out = formatSql(setting.sql, setIn(clone(setting.options), setting.path, opt.value));
+      if (!byOutput.has(out)) byOutput.set(out, []);
+      byOutput.get(out).push(opt);
+    }
+    const twins = new Map();
+    for (const group of byOutput.values()) {
+      for (const opt of group.slice(1)) twins.set(opt.value, group[0]);
+    }
+
+    for (const opt of options) {
+      const btn = el('button', null, opt.label + (opt.value === setting.def ? ' \u00b7' : ''));
+      btn.type = 'button';
+      btn.dataset.opt = setting.path + '=' + String(opt.value);
+      const twin = twins.get(opt.value);
+      if (twin) {
+        btn.classList.add('same');
+        btn.title = 'Same result as \u201c' + twin.label + '\u201d on this example';
+      } else {
+        btn.title = opt.value === setting.def ? 'The default' : 'Apply this value';
+      }
+      btn.setAttribute('aria-pressed', String(opt.value === value));
+      btn.addEventListener('click', () => setValue(setting.path, opt.value));
+      btn.addEventListener('mouseenter', () => showPreview(opt.value));
+      btn.addEventListener('focus', () => showPreview(opt.value));
+      btn.addEventListener('mouseleave', () => showPreview(value));
+      btn.addEventListener('blur', () => showPreview(value));
+      seg.appendChild(btn);
+    }
+    controls.appendChild(seg);
+
+    const shared = [...byOutput.values()].filter((group) => group.length > 1);
+    if (shared.length > 0) {
+      const note = el('p', 'coincide');
+      note.appendChild(document.createTextNode('Same result on this example: '));
+      shared.forEach((group, index) => {
+        if (index > 0) note.appendChild(document.createTextNode('; '));
+        note.appendChild(el('b', null, group.map((o) => o.label).join(' = ')));
+      });
+      note.appendChild(document.createTextNode('.'));
+      coincideNote = note;
+    }
+  }
+
+  if (!setting.effective) {
+    controls.appendChild(el('span', setting.note ? 'flag info' : 'flag',
+      setting.note || 'Declared, not yet applied'));
+  }
+
+  if (isModified) {
+    const reset = el('button', 'reset', 'Reset to default');
+    reset.type = 'button';
+    reset.addEventListener('click', () => resetValue(setting.path));
+    controls.appendChild(reset);
+  }
+  controls.appendChild(el('span', 'origin',
+    isModified ? 'Set in ' + scopeLabel() : 'Default'));
+  card.appendChild(controls);
+  if (coincideNote !== null) {
+    card.appendChild(coincideNote);
+  }
+
+  card.appendChild(panes);
+  renderPanes();
+  return card;
+}
+
+/* ---------------- live preview ---------------- */
+
+function renderPreview() {
+  const out = document.getElementById('preview-out');
+  try {
+    out.textContent = formatSql(PREVIEW_SQL, styleOptions());
+  } catch (e) {
+    out.textContent = 'Could not format the sample with these settings.';
+  }
+  document.getElementById('preview-hint').textContent =
+    overridden.size === 0
+      ? 'Your whole style, applied to one query. Nothing changed from the defaults yet.'
+      : 'Your whole style, applied to one query.';
+}
+
+function settingsJson() {
+  const keys = [...overridden].sort();
+  if (keys.length === 0) return '{\n}';
+  return '{\n' + keys
+    .map((p) => '  "sqlFormatter.' + p + '": ' + JSON.stringify(values[p]))
+    .join(',\n') + '\n}';
+}
+
+/* ---------------- scope ---------------- */
+
+function scopeLabel() {
+  const hit = scopeOptions.find((o) => o.id === scope);
+  return hit ? hit.label : 'User';
+}
+
+function buildScope() {
+  const box = document.getElementById('scope-box');
+  const select = document.getElementById('scope-select');
+  if (!inEditor || scopeOptions.length === 0) {
+    box.hidden = true;
+    return;
+  }
+  box.hidden = false;
+  select.replaceChildren();
+  for (const opt of scopeOptions) {
+    const node = document.createElement('option');
+    node.value = opt.id;
+    node.textContent = opt.label;
+    select.appendChild(node);
+  }
+  select.value = scope;
+}
+
+/* ---------------- render ---------------- */
+
+function render() {
+  // Changing a setting redraws the group, so remember what had focus and give
+  // it back afterwards -- a settings page you are clicking through should not
+  // lose the keyboard position under you.
+  const active = document.activeElement;
+  const focused = active instanceof HTMLElement ? active.dataset.opt : undefined;
+
+  const group = DATA.groups.find((g) => g.id === groupId) || DATA.groups[0];
+
+  for (const g of DATA.groups) {
+    const btn = document.getElementById('rail-' + g.id);
+    if (!btn) continue;
+    btn.setAttribute('aria-current', String(g.id === group.id));
+    const changed = g.settings.filter((s) => overridden.has(s.path)).length;
+    const count = btn.querySelector('.n');
+    if (count) {
+      count.textContent = changed > 0 ? String(changed) + ' \u00b7 ' + g.settings.length
+        : String(g.settings.length);
+      count.style.color = changed > 0 ? 'var(--accent)' : '';
+    }
+  }
+  document.getElementById('rail-select').value = group.id;
+  document.getElementById('group-name').textContent = group.name;
+  document.getElementById('group-blurb').textContent = group.blurb;
+
+  const cards = document.getElementById('cards');
+  cards.replaceChildren();
+  for (const setting of group.settings) cards.appendChild(buildCard(setting));
+
+  document.getElementById('c-modified').textContent = String(overridden.size);
+  renderPreview();
+
+  if (focused !== undefined) {
+    const restored = cards.querySelector('[data-opt="' + CSS.escape(focused) + '"]');
+    if (restored instanceof HTMLElement) {
+      restored.focus({ preventScroll: true });
+    }
+  }
+}
+
+function init() {
+  document.getElementById('c-settings').textContent = String(ALL.length);
+  buildRail();
+  buildScope();
+
+  document.getElementById('copy-btn').addEventListener('click', async (event) => {
+    const button = event.currentTarget;
+    try {
+      await navigator.clipboard.writeText(settingsJson());
+      button.textContent = 'Copied';
+    } catch (e) {
+      button.textContent = 'Press \u2318C';
+    }
+    setTimeout(() => { button.textContent = 'Copy settings JSON'; }, 1400);
+  });
+
+  if (inEditor) {
+    document.getElementById('scope-select').addEventListener('change', (event) => {
+      scope = event.currentTarget.value;
+      vscode.postMessage({ type: 'scope', scope });
+    });
+
+    window.addEventListener('message', (event) => {
+      const message = event.data;
+      if (!message || message.type !== 'settings') return;
+      scope = message.scope;
+      scopeOptions = message.scopes || [];
+      values = { ...DEFAULTS, ...(message.values || {}) };
+      overridden = new Set(message.overridden || []);
+      buildScope();
+      render();
+    });
+
+    vscode.postMessage({ type: 'ready' });
+  }
+
+  render();
+}
+
+init();
+</script>

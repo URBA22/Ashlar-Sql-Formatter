@@ -1,0 +1,74 @@
+name: New setting, value or dialect
+description: A style the formatter cannot currently produce, or missing dialect syntax.
+title: '[setting]: '
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        It is worth opening the **SQL Formatter: Open Style Reference** panel
+        first to check that the style you want is not reachable by a setting
+        that already exists — there are more of them than the list suggests.
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What is missing
+      options:
+        - A new value for an existing setting
+        - A new setting
+        - Dialect syntax that is not handled
+    validations:
+      required: true
+
+  - type: input
+    id: setting
+    attributes:
+      label: Related setting
+      description: The closest existing setting, if there is one.
+      placeholder: sqlFormatter.queries.select.alignAs
+
+  - type: textarea
+    id: input
+    attributes:
+      label: Input SQL
+      render: sql
+    validations:
+      required: true
+
+  - type: textarea
+    id: desired
+    attributes:
+      label: Output you want
+      description: >
+        Hand-written is fine. Be precise about alignment and line breaks — this
+        becomes the expected value of a test.
+      render: sql
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: Output you get today
+      description: The closest the formatter can currently get, and which settings you used to get there.
+      render: sql
+
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Why this style
+      description: >
+        A house style guide, a team convention, parity with another tool — it
+        helps to know whether this is one project's preference or a widespread
+        convention.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I checked the Style Reference panel and no existing setting produces this.
+          required: true
+        - label: I searched the existing issues for this.
+          required: true
