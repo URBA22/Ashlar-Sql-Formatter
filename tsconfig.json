@@ -3,6 +3,9 @@
     "module": "commonjs",
     "target": "ES2022",
     "lib": ["ES2022"],
+    // TypeScript 7 no longer pulls in every package under node_modules/@types
+    // implicitly, and node's globals (TextDecoder) come from @types/node.
+    "types": ["node", "vscode"],
     "outDir": "out",
     "rootDir": "src",
     "sourceMap": true,

@@ -1199,9 +1199,9 @@
     "test": "npm run build-tests && node tools/run-tests.js"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
+    "@types/node": "^24.13.4",
     "@types/vscode": "^1.90.0",
     "esbuild": "^0.28.2",
-    "typescript": "^5.6.0"
+    "typescript": "^7.0.2"
   }
 }
