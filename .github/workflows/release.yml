@@ -76,7 +76,6 @@ jobs:
         env:
           AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
           AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
         run: |
@@ -87,7 +86,7 @@ jobs:
           else
             # Entra ID wins when both are configured: Azure DevOps retires global
             # PATs on 2026-12-01, so the PAT is only ever a stopgap.
-            if [ -n "$AZURE_CLIENT_ID" ] && [ -n "$AZURE_TENANT_ID" ] && [ -n "$AZURE_SUBSCRIPTION_ID" ]; then
+            if [ -n "$AZURE_CLIENT_ID" ] && [ -n "$AZURE_TENANT_ID" ]; then
               entra=true
               echo "Publishing via Microsoft Entra ID (federated)."
             elif [ -n "$VSCE_PAT" ]; then
@@ -111,7 +110,10 @@ jobs:
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          # The identity is granted no Azure RBAC at all - it only needs to prove
+          # its identity to obtain an Azure DevOps token. Without this, az login
+          # fails with "No subscriptions found".
+          allow-no-subscriptions: true
 
       - name: Publish to Visual Studio Marketplace (Entra ID)
         if: steps.cfg.outputs.entra == 'true'
