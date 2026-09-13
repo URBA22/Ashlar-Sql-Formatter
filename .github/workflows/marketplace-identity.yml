@@ -31,7 +31,10 @@ jobs:
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          # The identity is granted no Azure RBAC at all - it only needs to prove
+          # its identity to obtain an Azure DevOps token. Without this, az login
+          # fails with "No subscriptions found".
+          allow-no-subscriptions: true
 
       - name: Read the identity's Azure DevOps profile
         shell: bash
