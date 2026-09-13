@@ -65,7 +65,7 @@ jobs:
           version="$(node -p 'require("./package.json").version')"
           name="$(node -p 'require("./package.json").name')"
           file="$name-$version.vsix"
-          npx --yes @vscode/vsce@3 package --allow-missing-repository --out "$file"
+          npx --yes @vscode/vsce@3 package --out "$file"
           echo "file=$file" >> "$GITHUB_OUTPUT"
 
       # Secrets/vars cannot be read from a step-level `if:`, so probe them into outputs
@@ -76,20 +76,32 @@ jobs:
         env:
           AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
           AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
         run: |
+          entra=false; pat=false; ovsx=false
+
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
             echo "Dry run requested - skipping all publish steps."
-            echo "entra=false" >> "$GITHUB_OUTPUT"
-            echo "ovsx=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          if [ -n "$AZURE_CLIENT_ID" ] && [ -n "$AZURE_TENANT_ID" ]; then
-            echo "entra=true" >> "$GITHUB_OUTPUT"
           else
-            echo "entra=false" >> "$GITHUB_OUTPUT"
+            # Entra ID wins when both are configured: Azure DevOps retires global
+            # PATs on 2026-12-01, so the PAT is only ever a stopgap.
+            if [ -n "$AZURE_CLIENT_ID" ] && [ -n "$AZURE_TENANT_ID" ] && [ -n "$AZURE_SUBSCRIPTION_ID" ]; then
+              entra=true
+              echo "Publishing via Microsoft Entra ID (federated)."
+            elif [ -n "$VSCE_PAT" ]; then
+              pat=true
+              echo "::warning::Publishing with a Personal Access Token. Azure DevOps retires global PATs on 2026-12-01 - migrate to Entra ID before then."
+            fi
+            [ -n "$OVSX_PAT" ] && ovsx=true
           fi
-          [ -n "$OVSX_PAT" ] && echo "ovsx=true" >> "$GITHUB_OUTPUT" || echo "ovsx=false" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "entra=$entra"
+            echo "pat=$pat"
+            echo "ovsx=$ovsx"
+          } >> "$GITHUB_OUTPUT"
 
       # Federated (OIDC) sign-in: no client secret is stored. This leaves an Azure CLI
       # session that vsce's --azure-credential picks up via AzureCliCredential.
@@ -99,14 +111,23 @@ jobs:
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          # The publishing identity needs no Azure subscription, only Marketplace rights.
-          allow-no-subscriptions: true
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Publish to Visual Studio Marketplace
+      - name: Publish to Visual Studio Marketplace (Entra ID)
         if: steps.cfg.outputs.entra == 'true'
         run: |
           npx --yes @vscode/vsce@3 publish \
             --azure-credential \
+            --skip-duplicate \
+            --packagePath "${{ steps.pack.outputs.file }}"
+
+      - name: Publish to Visual Studio Marketplace (PAT)
+        if: steps.cfg.outputs.pat == 'true'
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          npx --yes @vscode/vsce@3 publish \
+            --skip-duplicate \
             --packagePath "${{ steps.pack.outputs.file }}"
 
       - name: Publish to Open VSX
@@ -116,7 +137,7 @@ jobs:
         run: npx --yes ovsx@0.10 publish "${{ steps.pack.outputs.file }}" -p "$OVSX_PAT"
 
       - name: Report skipped publishing
-        if: steps.cfg.outputs.entra != 'true' && steps.cfg.outputs.ovsx != 'true'
+        if: steps.cfg.outputs.entra != 'true' && steps.cfg.outputs.pat != 'true' && steps.cfg.outputs.ovsx != 'true'
         run: |
           echo "::notice::No publishing identity configured (or dry run). The vsix is attached to the release only."
 

@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 
-# Uncomment once Discussions is enabled on the repository, and replace OWNER/REPO.
+# Uncomment once Discussions is enabled on the repository.
 # contact_links:
 #   - name: Question or idea
-#     url: https://github.com/OWNER/REPO/discussions
+#     url: https://github.com/URBA22/Ashlar-Sql-Formatter/discussions
 #     about: For anything that is not a concrete bug or a specific setting request.

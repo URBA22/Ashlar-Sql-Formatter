@@ -62,7 +62,7 @@ jobs:
 
       - name: Package extension
         # vsce re-runs `vscode:prepublish`, so this also proves the publish path compiles.
-        run: npx --yes @vscode/vsce@3 package --allow-missing-repository --out sql-formatter.vsix
+        run: npx --yes @vscode/vsce@3 package --out sql-formatter.vsix
 
       - name: Upload vsix
         uses: actions/upload-artifact@v4

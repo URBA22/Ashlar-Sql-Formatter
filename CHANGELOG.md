@@ -15,7 +15,7 @@ Initial release.
 - Every value of every enum setting has behaviour of its own, checked by the
   build: the parenthesis placements, the wrap modes, `auto` commas and the
   collapse modes are all distinct rather than aliases of one another.
-- A Style Reference panel (`SQL Formatter: Open Style Reference`): a live
+- A Style Reference panel (`Ashlar - SQL Formatter (T-SQL): Open Style Reference`): a live
   settings editor that shows each setting's before and after, reflects the
   values in force for the User, Workspace or folder scope, and saves each change
   immediately. Hovering a value previews it before you commit.
