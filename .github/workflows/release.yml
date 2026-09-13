@@ -106,7 +106,7 @@ jobs:
       # session that vsce's --azure-credential picks up via AzureCliCredential.
       - name: Sign in to Microsoft Entra ID
         if: steps.cfg.outputs.entra == 'true'
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
